@@ -22,6 +22,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:rng="http://relaxng.org/ns/structure/1.0"
                 xmlns:nma="urn:ietf:params:xml:ns:netmod:dsdl-annotations:1"
+                xmlns:nmt="urn:ietf:params:xml:ns:netmod:hybrid-schema:1"
                 xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"                version="1.0">
 
   <xsl:output method="xml" encoding="utf-8"/>
@@ -74,7 +75,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     <xsl:call-template name="check-input-pars"/>
     <xsl:choose>
       <xsl:when test="$gdefs-only=1">
-        <xsl:apply-templates select="rng:grammar" mode="gdefs"/>
+        <xsl:apply-templates select="rng:grammar" mode="        defs"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates select="rng:grammar"/>
@@ -85,7 +86,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   <xsl:template match="/rng:grammar" mode="gdefs">
     <xcopy>
       <xsl:attribute name="datatypeLibrary">
-	   <xsl:value-of select="@datatypeLibrary"/>
+           <xsl:value-of select="@datatypeLibrary"/>
       </xsl:attribute>
       <xsl:apply-templates select="rng:define"/>
     </xcopyent>
@@ -108,9 +109,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     <xsl:copy>
     <xsl:choose>
       <xsl:when test="$target='dstore'">
-        <xsl:element name="choice" namespace="{$rng-uri}">
-	  <xsl:apply-templates
-	      select="rng:grammar[descendant::rng:element[@name='nmt:data']]"/>
+        <xsl:element name="choice" namespace="{$rng-uri}          <xsl:apply-templates
+              select="rng:grammar[descendant::nmt:dataa']]"/>
         </xsl:element>
       </xsl:when>
       <xsl:when test="$target='get-reply' or $target='getconf-reply'">
@@ -118,38 +118,37 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
           <xsl:attribute name="name">rpc-reply</xsl:attribute>
           <xsl:call-template name="message-id"/>
           <xsl:element name="element" namespace="{$rng-uri}">
-            <xsl:attribute name="name">data</xsl:attribute>
-	    <xsl:element name="interleave" namespace="{$rng-uri}">
-	      <xsl:apply-templates
-		  select="rng:grammar[descendant::rng:element[@name='nmt:data']]"/>
-	    </xsl:element>
-          </xsl:element>
+            <xsl:attribute name="name">data</xsl:attribut            <xsl:element name="interleave" namespace="{$rng-uri}">
+              <xsl:apply-templates
+                  select="rng:grammar[descendant::nmt:data]"/>
+            </xsl:element>
+        >
+	  </xsl:element>
         </xsl:element>
       </xsl:when>
-      <xsl:when test="$target='rpc'">
+      <xsl:when test="$targerpcply'">
         <xsl:element name="element" namespace="{$rng-uri}">
-          <xsl:attribute name="name">rpc</xsl:attribute>
+          <xsl:attribute name="name">ply</xsl:attribute>
           <xsl:call-template name="message-id"/>
-	  <xsl:element name="choice" namespace="{$rng-uri}">
-	    <xsl:apply-templates
-		select="rng:grammar[descendant::rng:element[@name='nmt:rpcs']]"/>
+          <xsl:element namchoice" namespace="{$rng-uri}">
+            <xsl:apply-templates
+                select="rng:grammar[descendant::nmt:rpcs]"/>
+        >
 	  </xsl:element>
         </xsl:element>
       </xsl:when>
       <xsl:when test="$target='rpc-reply'">
         <xsl:element name="element" namespace="{$rng-uri}">
           <xsl:attribute name="name">rpc-reply</xsl:attribute>
-          <xsl:call-template name="message-id"/>
-	  <xsl:element name="choice" namespace="{$rng-uri}">
-	    <xsl:if test="descendant::rng:element[@name='nmt:rpc' and
-			  not(rng:element[@name='nmt:output'])]">
-	      <xsl:element name="ref" namespace="{$rng-uri}">
-		<xsl:attribute name="name">ok-element</xsl:attribute>
-	      </xsl:element>
-	    </xsl:if>
-	    <xsl:apply-templates
-		select="rng:grammar[descendant::rng:element
-			[@name='nmt:output']]"/>
+          <xsl:call-template name="message-id"          <xsl:element name="choice" namespace="{$rng-uri}">
+            <xsl:if test="descendant::nmt:rpc[not(nmt:output)]">
+              <xsl:element name="ref" namespace="{$rng-uri}">
+                <xsl:attribute name="name">ok-element</xsl:attribute>
+              </xsl:element>
+            </xsl:if>
+            <xsl:apply-templates
+                select="rng:grammar[descendant::nmt:output]"/>
+        >
 	  </xsl:element>
         </xsl:element>
       </xsl:when>
@@ -158,12 +157,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
           <xsl:attribute name="name">notification</xsl:attribute>
           <xsl:element name="ref" namespace="{$rng-uri}">
             <xsl:attribute name="name">eventTime-element</xsl:attribute>
+          </xsl:elemen          <xsl:element name="choice" namespace="{$rng-uri}">
+            <xsl:apply-templates
+                select="rng:grammar[descendant::nmt:notification]"/>
           </xsl:element>
-	  <xsl:element name="choice" namespace="{$rng-uri}">
-	    <xsl:apply-templates
-		select="rng:grammar[descendant::rng:element
-			[@name='nmt:notification']]"/>
-	  </xsl:element>
+        >
 	</xsl:element>
       </xsl:when>
     </xsl:choose>
@@ -172,116 +170,114 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
   <xsl:template match="rng:grammar">
     <xvariable
-	name="subtree"
-	select="descendant::rng:element[
-		@name='nmt:data' and ($target='dstore'
-		or $target='get-reply' or $target='getconf-reply') or
-		@name='nmt:rpcs' and ($target='rpc' or $target='rpc-reply')
-		or @name='nmt:notifications' and $target='notif']"/>
-    <xsl:if test="not($subtree/rng:empty)">
+        name="subtree"
+        select="descendant::nmt:data[$target='dstore'
+                or $target='get-reply' or $target='getconf-reply']
+                |descendant::nmt:rpcs[$target='rpc' or
+                $target='rpc-reply']
+                |descendant::nmt:notifications[$target='notif']"/>
+    <xsl:if test="$subtree/*">
       <xsl:element name="grammar" namespace="{$rng-uri}">
-	<xsl:attribute name="ns">
-	  <xsl:value-of select="@ns"/>
-	</xsl:attribute>
-	<xsl:if test="/rng:grammar/rng:define">
-	  <xsl:element name="include" namespace="{$rng-uri}">
-	    <xsl:attribute name="href">
-	      <xsl:value-of select="concat($basename,'-gdefs.rng')"/>
-	    </xsl:attribute>
-	  </xsl:element>
-	</xsl:if>
-	<xsl:element name="start" namespace="{$rng-uri}">
-	  <xsl:apply-templates select="$subtree"/>
-	</xsl:element>
-	<xsl:apply-templates select="rng:define"/>
+        <xsl:attribute name="ns">
+          <xsl:value-of select="@ns"/>
+        </xsl:attribute>
+        <xsl:if test="/rng:grammar/rng:define">
+          <xsl:element name="include" namespace="{$rng-uri}">
+            <xsl:attribute name="href">
+              <xsl:value-of select="concat($basename,'-gdefs.rng')"/>
+            </xsl:attribute>
+          </xsl:element>
+        </xsl:if>
+        <xsl:element name="start" namespace="{$rng-uri}">
+          <xsl:apply-templates select="$subtree"/>
+        </xsl:element>
+        <xsl:apply-templates select="rng:define"/>
       </xsl:element>
     </xsl:ifose>
   </xsl:template>
 
-  <xsl:template match="rng:element[@name='nmt:data']">
+  <xsl:template matcnmt:data">
     <xsl:choose>
       <xsl:when test="$target='dstore' and rng:interleave">
-	<xsl:element name="choice" namespace="{$rng-uri}">
-	  <xsl:apply-templates select="rng:interleave/rng:*"/>
-	</xsl:element>
+        <xsl:element name="choice" namespace="{$rng-uri}">
+          <xsl:apply-templates select="rng:interleave/rng:*"/>
+        </xsl:element>
       </xsl:when>
       <xsl:otherwise>
-	<xsl:apply-templates select="rng:*"/>
+        <xsl:apply-templates select="rng:*mar"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="rng:element[@name='nmt:rpcs']">
+  <xsl:template matcnmt:rpcs">
     <xsl:choose>
       <xsl:when test="$target='rpc'">
-	<xsl:choose>
-	  <xsl:when test="count(rng:element[@name='nmt:rpc'])>1">
-	    <xsl:element name="choice" namespace="{$rng-uri}">
-	      <xsl:apply-templates
-		  select="descendant::rng:element[@name='nmt:input']"/>
-	    </xsl:element>
-	  </xsl:when>
-	  <xsl:otherwise>
-	    <xsl:apply-templates
-		select="descendant::rng:element[@name='nmt:input']"/>
-	  </xsl:otherwise>
-	</xsl:choose>
+        <xsl:choose>
+          <xsl:when test="count(nmt:rpc)>1">
+            <xsl:element name="choice" namespace="{$rng-uri}">
+              <xsl:apply-templates
+                  select="descendant::nmt:input"/>
+            </xsl:element>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates
+                select="descendant::nmt:input"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
-	<xsl:choose>
-	  <xsl:when test="count(descendant::rng:element[@name='nmt:output'])>1">
-	    <xsl:element name="choice" namespace="{$rng-uri}">
-	      <xsl:apply-templates
-		  select="descendant::rng:element[@name='nmt:output']"/>
-	    </xsl:element>
-	  </xsl:when>
-	  <xsl:otherwise>
-	    <xsl:apply-templates
-		select="descendant::rng:element[@name='nmt:output']"/>
-	  </xsl:otherwise>
-	</xsl:choose>
+        <xsl:choose>
+          <xsl:when test="count(descendant::nmt:output)>1">
+            <xsl:element name="choice" namespace="{$rng-uri}">
+              <xsl:apply-templates
+                  select="descendant::nmt:output"/>
+            </xsl:element>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates
+                select="descendant::nmt:output"/>
+          </xsl:otherwise>
+        </xsl:chooser"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="rng:element[@name='nmt:notifications']">
+  <xsl:template matcnmt:notifications">
     <xsl:choose>
-      <xsl:when test="count(rng:element[@name='nmt:notification'])>1">
-	<xsl:element name="choice" namespace="{$rng-uri}">
-	  <xsl:apply-templates
-	      select="rng:element[@name='nmt:notification']"/>
-	</xsl:element>
+      <xsl:when test="count(nmt:notification)>1">
+        <xsl:element name="choice" namespace="{$rng-uri}">
+          <xsl:apply-templates select="nmt:notification"/>
+        </xsl:element>
       </xsl:when>
       <xsl:otherwise>
-	<xsl:apply-templates
-	    select="rng:element[@name='nmt:notification']"/>
+        <xsl:apply-templates select="nmt:notificationmar"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template
-      match="rng:element[@name='nmt:input' or @name='nmt:output']">
+  <xsl:template matcnmt:input|nmt:output">
     <xsl:choose>
       <xsl:when test="count(rng:*)>1">
-	<xsl:element name="group" namespace="{$rng-uri}">
-	  <xsl:apply-templates/>
-	</xsl:element>
+        <xsl:element name="group" namespace="{$rng-uri}">
+          <xsl:apply-templates/>
+        </xsl:element>
       </xsl:when>
       <xsl:otherwise>
+        >
 	<xsl:apply-templates/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template
-      match="rng:element[@name='nmt:notification']">
+  <xsl:template matcnmt:notification">
     <xsl:choose>
       <xsl:when test="count(rng:*)>1">
-	<xsl:element name="interleave" namespace="{$rng-uri}">
-	  <xsl:apply-templates/>
-	</xsl:element>
+        <xsl:element name="interleave" namespace="{$rng-uri}">
+          <xsl:apply-templates/>
+        </xsl:element>
       </xsl:when>
       <xsl:otherwise>
+        >
 	<xsl:apply-templates/>
       </xsl:otherwise>
     </xsl:choose>
@@ -296,9 +292,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   <xsl:template match="rng:optional|rng:oneOrMore|rng:zeroOrMore">
     <xsl:choose>
       <xsl:when test="$target='dstore' and
-                      (parent::rng:element/@name='nmt:data' or
-                      parent::rng:interleave/
-                      parent::rng:element/@name='nmt:data')">
+                      (parennmt:data or
+                      parent::rng:interleave/parent::nmt:datata')">
         <xsl:apply-templates/>
       </xsl:when>
       <xsl:otherwise>
