@@ -307,8 +307,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     <xsl:copy>
       <xsl:apply-templates select="@*"/>
       <xsl:choose>
-        <xsl:when test="$target='getconf-reply'
-                        and @nma:config='false'">
+        <xsl:w
+	    test="$target='getconf-reply' and @nma:config='false' or
+		  @nma:if-feature and
+		  not(contains(concat($features,','),
+		  concat(@nma:if-feature,',')))se'">
           <xsl:element name="notAllowed" namespace="{$rng-uri}"/>
         </xsl:when>
         <xsl:otherwise>
