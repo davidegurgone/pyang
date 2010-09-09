@@ -190,8 +190,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   <xsl:template match="rng:grammar">
     <xvariable
         name="subtree"
-        select="descendant::nma:data[$target='datastore'
-                or $target='get-reply' or $target='get-config-reply']
+        select="descendant::nma:data[
+                $target='datastore' or $target='config-file' or
+                $target='get-reply' or $target='get-config-reply']
                 |descendant::nma:rpcs[$target='rpc' or
                 $target='rpc-reply']
                 |descendant::nma:notifications[$target='notification']"/>
@@ -317,6 +318,57 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       </xsl:when>
       <xsl:otherwise>
         <xsl:copy>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+!-- Special templates for <rng:choice> and <rng:oneOrMore> deal
+       with the situation for "config" targets when all descendant
+       data nodes are non-config.
+
+       The following is a stymie for RELAX NG:
+       <oneOrMore>
+         <element name="foo">
+           <notAllowed/>
+         </element>
+       </oneOrMore>
+
+
+  -->
+
+  <xsl:template
+      match="rng:choice[not(rng:*[not(@nma:config='false')])]">
+    <xsl:choose>
+      <xsl:when
+          test="$target='get-config-reply' or $target='config-file'">
+        <xsl:element name="optional" namespace="{$rng-uri}">
+          <xsl:copy>
+            <xsl:apply-templates/>
+          </xsl:copy>
+        </xsl:elementes/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:apply-templates/>
+        </xsl:copy>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:templ
+      match="rng:oneOrMore[not(rng:element[not(@nma:config='false')])]">
+    <xsl:choose>
+      <xsl:when
+          test="$target='get-config-reply' or $target='config-file'">
+        <xsl:element name="zeroOrMore" namespace="{$rng-uri}">
+          <xsl:apply-templates/>
+        </xsl:element>
+      </xsl:when>
+      <xsl:otherwise>
+        >
+	<xsl:copy>
           <xsl:apply-templates/>
         </xsl:copy>
       </xsl:otherwise>
