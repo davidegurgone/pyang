@@ -30,14 +30,15 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   <xsl:include href="gen-common.xsl"/>
 
   <xsl:template name="ns-attribute">
-    <xsl:if test="$target!='dstore'">
+    <xsl:if test="$target!='datastore'">
       <xsl:attribute name="ns">
         <xsl:choose>
-          <xsl:when test="$target='get-reply' or $target='getconf-reply'
+          <xsl:when test="$target='get-reply' or $target='config-file'
+                          or $target='get-config-reply'
                           or $target='rpc' or $target='rpc-reply'">
             <xsl:text>urn:ietf:params:xml:ns:netconf:base:1.0</xsl:text>
           </xsl:when>
-          <xsl:when test="$target='notif'">
+          <xsl:when test="$target='notification'">
             <xsl:text>urn:ietf:params:xml:ns:netconf:notification:1.0</xsl:text>
           </xsl:when>
         </xsl:choose>
@@ -62,6 +63,16 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     <xsl:param name="subtrees"/>
     <xsl:if test="$subtrees">
     </xsl:if>
+  </xsl:template>
+
+  <xsl:template name="data-element-pattern">
+    <xsl:element name="element" namespace="{$rng-uri}">
+      <xsl:attribute name="name">data</xsl:attribute>
+      <xsl:element name="interleave" namespace="{$rng-uri}">
+        <xsl:apply-templates
+            select="rng:grammar[descendant::nma:data]"/>
+      </xsl:element>
+    </xsl:element>
   </xsl:template>
 
   <xsl:template name="message-id">
@@ -107,23 +118,32 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   <xsl:template match="/rng:grammar/rng:start">
     <xsl:copy>
     <xsl:choose>
-      <xsl:when test="$target='dstore'">
-        <xsl:element name="choice" namespace="{$rng-uri}          <xsl:apply-templates
+      <xsl:when test="$targetatastore'">
+        <xsl:element name="choice" namespace="{$rng-uri}">
+          <xsl:apply-templates
               select="rng:grammar[descendant::nma:data]"/ent>
         </xsl:element>
       </xsl:when>
-      <xsl:when test="$target='get-reply' or $target='getconf-reply'">
+      <xsl:when test="$targeconfig-fileply'">
         <xsl:element name="element" namespace="{$rng-uri}">
-          <xsl:attribute name="name">rpc-reply</xsl:attribute>
-          <xsl:call-template name="message-id"/>
-          <xsl:element name="element" namespace="{$rng-uri}">
-            <xsl:attribute name="name">data</xsl:attribut            <xsl:element name="interleave" namespace="{$rng-uri}">
-              <xsl:apply-templates
-                  select="rng:grammar[descendant::nma:data]"/>
-            </xsl:element>
-        >
-	  </xsl:element>
+          <xsl:attribute name="namconfig</xsl:attributei}          <xsl:apply-templates
+              select="rng:grammar[descendant::nma:data]"/ent>
         </xsl:element>
+      </xsl:when>
+      <xsl:when test="$target='get-reply'
+                      $target='get-config-reply'">
+        <xsl:choose>
+          <xsl:when test="$only-data=0">
+            <xsl:element name="element" namespace="{$rng-uri}">
+              <xsl:attribute name="name">rpc-reply</xsl:attribute>
+              <xsl:call-template name="message-id"/>
+              <xsl:call-template name="data-element-pattern"/>
+            </xsl:element>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="data-element-pattern"/>
+          </xsl:otherwise>
+        </xsl:chooseent>
       </xsl:when>
       <xsl:when test="$targerpcply'">
         <xsl:element name="element" namespace="{$rng-uri}">
@@ -151,7 +171,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 	  </xsl:element>
         </xsl:element>
       </xsl:when>
-      <xsl:when test="$targenotifply'">
+      <xsl:when test="$targenotificationply'">
         <xsl:element name="element" namespace="{$rng-uri}">
           <xsl:attribute name="name">notification</xsl:attribute>
           <xsl:element name="ref" namespace="{$rng-uri}">
@@ -170,11 +190,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   <xsl:template match="rng:grammar">
     <xvariable
         name="subtree"
-        select="descendant::nma:data[$target='dstore'
-                or $target='get-reply' or $target='getconf-reply']
+        select="descendant::nma:data[$target='datastore'
+                or $target='get-reply' or $target='get-config-reply']
                 |descendant::nma:rpcs[$target='rpc' or
                 $target='rpc-reply']
-                |descendant::nma:notifications[$target='notif']"/>
+                |descendant::nma:notifications[$target='notification']"/>
     <xsl:if test="$subtree/*">
       <xsl:element name="grammar" namespace="{$rng-uri}">
         <xsl:attribute name="ns">
@@ -197,7 +217,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
   <xsl:template matcnma:data">
     <xsl:choose>
-      <xsl:when test="$target='dstore' and rng:interleave">
+      <xsl:when test="$target='datastore' and rng:interleave">
         <xsl:element name="choice" namespace="{$rng-uri}">
           <xsl:apply-templates select="rng:interleave/rng:*"/>
         </xsl:element>
@@ -290,7 +310,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
   <xsl:template match="rng:optional|rng:oneOrMore|rng:zeroOrMore">
     <xsl:choose>
-      <xsl:when test="$target='dstore' and
+      <xsl:when test="$targetata='dstore' and
                       (parennma:data or
                       parent::rng:interleave/parent::nma:datata')">
         <xsl:apply-templates/>
@@ -308,7 +328,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       <xsl:apply-templates select="@*"/>
       <xsl:choose>
         <xsl:w
-            test="$target='getconf-reply' and @nma:config='false' or
+            test="($target='get-config-reply' or $target='config-file')
+                  and @nma:config='false' or
                   @nma:if-feature and ($off-features='%' or
                   contains(concat($off-features,','),
                   concat(substring-after(@nma:if-feature,':'), '@',
