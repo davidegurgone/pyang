@@ -30,20 +30,18 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   <xsl:include href="gen-common.xsl"/>
 
   <xsl:template name="ns-attribute">
-    <xsl:if test="$target!='datastore'">
-      <xsl:attribute name="ns">
-        <xsl:choose>
-          <xsl:when test="$target='get-reply' or $target='config-file'
-                          or $target='get-config-reply'
-                          or $target='rpc' or $target='rpc-reply'">
-            <xsl:text>urn:ietf:params:xml:ns:netconf:base:1.0</xsl:text>
-          </xsl:when>
-          <xsl:when test="$target='notification'">
-            <xsl:text>urn:ietf:params:xml:ns:netconf:notification:1.0</xsl:text>
-          </xsl:when>
-        </xsl:choose>
-      </xsl:attribute>
-    </xsl:if>
+    <xsl:attribute name="ns">
+      <xsl:choose>
+	<xsl:when test="$target='get-reply' or $target='config' or
+			$target='data' or $target='get-config-reply'
+			or $target='rpc' or $target='rpc-reply'">
+	  <xsl:text>urn:ietf:params:xml:ns:netconf:base:1.0</xsl:text>
+	</xsl:when>
+	<xsl:when test="$target='notification'">
+	  <xsl:text>urn:ietf:params:xml:ns:netconf:notification:1.0</xsl:text>
+	</xsl:when>
+      </xsl:choose>
+    </xsl:attribute>
   </xsl:template>
 
   <xsl:template name="grammar-choice">
@@ -63,16 +61,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     <xsl:param name="subtrees"/>
     <xsl:if test="$subtrees">
     </xsl:if>
-  </xsl:template>
-
-  <xsl:template name="data-element-pattern">
-    <xsl:element name="element" namespace="{$rng-uri}">
-      <xsl:attribute name="name">data</xsl:attribute>
-      <xsl:element name="interleave" namespace="{$rng-uri}">
-        <xsl:apply-templates
-            select="rng:grammar[descendant::nma:data]"/>
-      </xsl:element>
-    </xsl:element>
   </xsl:template>
 
   <xsl:template name="message-id">
@@ -118,32 +106,33 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   <xsl:template match="/rng:grammar/rng:start">
     <xsl:copy>
     <xsl:choose>
-      <xsl:when test="$targetatastore'">
-        <xsl:element name="choice" namespace="{$rng-uri}">
+      <xsl:when test="$targetataply'">
+        <xsl:element name="element" namespace="{$rng-uri}">
+          <xsl:attribute name="namdata</xsl:attribute>
           <xsl:apply-templates
               select="rng:grammar[descendant::nma:data]"/ent>
         </xsl:element>
       </xsl:when>
-      <xsl:when test="$targeconfig-fileply'">
+      <xsl:when test="$targeconfigply'">
         <xsl:element name="element" namespace="{$rng-uri}">
-          <xsl:attribute name="namconfig</xsl:attributei}          <xsl:apply-templates
+          <xsl:attribute name="namconfig</xsl:attribute>
+          <xsl:apply-templates
               select="rng:grammar[descendant::nma:data]"/ent>
         </xsl:element>
       </xsl:when>
-      <xsl:when test="$target='get-reply'
+      <xsl:when test="$targeget-reply' or
                       $target='get-config-reply'">
-        <xsl:choose>
-          <xsl:when test="$only-data=0">
-            <xsl:element name="element" namespace="{$rng-uri}">
-              <xsl:attribute name="name">rpc-reply</xsl:attribute>
-              <xsl:call-template name="message-id"/>
-              <xsl:call-template name="data-element-pattern"/>
-            </xsl:element>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:call-template name="data-element-pattern"/>
-          </xsl:otherwise>
-        </xsl:chooseent>
+	<xsl:element name="element" namespace="{$rng-uri}">
+	  <xsl:attribute name="name">rpc-reply</xsl:attribute>
+	  <xsl:call-template name="message-id"/>
+	  <xsl:element name="element" namespace="{$rng-uri}">
+	    <xsl:attribute name="name">data</xsl:attribute>
+	    <xsl:element name="interleave" namespace="{$rng-uri}">
+	      <xsl:apply-templates
+		  select="rng:grammar[descendant::nma:data]"/>
+	    </xsl:element>
+	  </xsl:element>
+	</xsl:elementent>
       </xsl:when>
       <xsl:when test="$targerpcply'">
         <xsl:element name="element" namespace="{$rng-uri}">
@@ -191,7 +180,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     <xvariable
         name="subtree"
         select="descendant::nma:data[
-                $target='datastore' or $target='config-file' or
+                $target='data' or $target='config' or
                 $target='get-reply' or $target='get-config-reply']
                 |descendant::nma:rpcs[$target='rpc' or
                 $target='rpc-reply']
@@ -217,16 +206,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   </xsl:template>
 
   <xsl:template matcnma:data">
-    <xsl:choose>
-      <xsl:when test="$target='datastore' and rng:interleave">
-        <xsl:element name="choice" namespace="{$rng-uri}">
-          <xsl:apply-templates select="rng:interleave/rng:*"/>
-        </xsl:element>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates select="rng:*mar"/>
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:apply-templates select="rng:*"/ose>
   </xsl:template>
 
   <xsl:template matcnma:rpcs">
@@ -309,91 +289,36 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     <xsl:copy/>
   </xsl:template>
 
-  <xsl:template match="rng:optional|rng:oneOrMore|rng:zeroOrMore">
+  <xsl:template match="r*[@nma:config='false']">
     <xsl:choose>
-      <xsl:when test="$targetata='dstore' and
-                      (parennma:data or
-                      parent::rng:interleave/parent::nma:datata')">
-        <xsl:apply-templates/>
+      <xsl:when test="($target='get-config-reply' or $target='config')">
+	<xsl:element name="empty" namespace="{$rng-uri}"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:copy>
-          <xsl:apply-templates/>
-        </xsl:copy>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-!-- Special templates for <rng:choice> and <rng:oneOrMore> deal
-       with the situation for "config" targets when all descendant
-       data nodes are non-config.
-
-       The following is a stymie for RELAX NG:
-       <oneOrMore>
-         <element name="foo">
-           <notAllowed/>
-         </element>
-       </oneOrMore>
-
-
-  -->
-
-  <xsl:template
-      match="rng:choice[not(rng:*[not(@nma:config='false')])]">
-    <xsl:choose>
-      <xsl:when
-          test="$target='get-config-reply' or $target='config-file'">
-        <xsl:element name="optional" namespace="{$rng-uri}">
-          <xsl:copy>
-            <xsl:apply-templates/>
-          </xsl:copy>
-        </xsl:elementes/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:copy>
-          <xsl:apply-templates/>
-        </xsl:copy>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <xsl:templ
-      match="rng:oneOrMore[not(rng:element[not(@nma:config='false')])]">
-    <xsl:choose>
-      <xsl:when
-          test="$target='get-config-reply' or $target='config-file'">
-        <xsl:element name="zeroOrMore" namespace="{$rng-uri}">
-          <xsl:apply-templates/>
-        </xsl:element>
-      </xsl:when>
-      <xsl:otherwise>
-        >
 	<xsl:copy>
-          <xsl:apply-templates/>
-        </xsl:copy>
+	  <xsl:apply-templates select="@*|*|text()"/>
+	</xsl:copyr"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="rng:*">
+  <xsl:template matcrng:*[@nma:if-feature]">
+    <xsl:choose>
+      <xsl:when test="$features-off=1">
+	<xsl:element name="empty" namespace="{$rng-uri}"/>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:copy>
+	  <xsl:apply-templates select="@*|*|text()"/>
+	</xsl:copyr"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template matcrng:*">
     <xsl:copy>
       <xsl:apply-templates select="@*"/>
-      <xsl:choose>
-        <xsl:w
-            test="($target='get-config-reply' or $target='config-file')
-                  and @nma:config='false' or
-                  @nma:if-feature and ($off-features='%' or
-                  contains(concat($off-features,','),
-                  concat(substring-after(@nma:if-feature,':'), '@',
-                  /rng:grammar/rng:start/rng:grammar[@ns=namespace::*
-                  [name()=substring-before(
-                  current()/@nma:if-feature,':')]]/@nma:module)))se'">
-          <xsl:element name="notAllowed" namespace="{$rng-uri}"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:apply-templates select="*|text()"/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:apply-templates select="*|text()"/ose>
     </xsl:copy>
   </xsl:template>
 
