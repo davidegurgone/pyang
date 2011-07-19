@@ -333,20 +333,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 	<xsl:element name="empty" namespace="{$rng-uri}"/>
       </xsl:when>
       <xsl:otherwise>
-	<xsl:copy>
-	  <xsl:apply-templates select="@*|*|text()"/>
-	</xsl:copyr"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <xsl:template matcrng:*[@nma:if-feature]">
-    <xsl:choose>
-      <xsl:when test="$features-off=1">
-	<xsl:element name="empty" namespace="{$rng-uri}"/>
-      </xsl:when>
-      <xsl:otherwise>
-	<xsl:copy>
+	<xsl:copy><FOO/>
 	  <xsl:apply-templates select="@*|*|text()"/>
 	</xsl:copyr"/>
       </xsl:otherwise>
@@ -368,6 +355,18 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   </xsl:template>
 
   <xsl:template match="rng:element">
+    <xsl:choose>
+      <xsl:when test="@nma:config='false' and ($target='get-config-reply' or $target='config'
+		      or $target='edit-config') or @nma:if-feature and $features-off=1">
+	<xsl:element name="empty" namespace="{$rng-uri}"/>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:apply-templates select="." mode="processmar"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template matcrng:element" mode="process">
     <xsl:choose>
       <xsl:when test="$target='edit-config'">
 	<xsl:choose>
@@ -412,7 +411,15 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       <xsl:apply-templates select="*|text()"/ose>
     </xsl:copy>
   </xsl:template  <xsl:template match="rng:*">
-    <xsl:call-template name="copy-and-continue"/opy>
+    <xsl:choose>
+      <xsl:when test="@nma:config='false' and ($target='get-config-reply' or $target='config'
+		      or $target='edit-config') or @nma:if-feature and $features-off=1">
+	<xsl:element name="empty" namespace="{$rng-uri}"/>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:call-template name="copy-and-continue"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
-</xsl:styleshee
+</xsl:stylesheet>
