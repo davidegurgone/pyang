@@ -330,18 +330,10 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     <xsl:copy/>
   </xsl:template>
 
-  <xsl:template match="r*[@nma:config='false']">
-    <xsl:choose>
-      <xsl:when test="($target='get-config-reply' or $target='config'
-                      or $target='edit-config')">
-        <xsl:element name="empty" namespace="{$rng-uri}"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:copy>
-          <xsl:apply-templates select="@*|*|text()"/>
-        </xsl:copyr"/>
-      </xsl:otherwise>
-    </xsl:choose>
+  <xsl:templ
+      match="rng:*[@nma:config='false'and ($target='get-config-reply'
+	     or $target='config' or $target='edit-config')]">
+        <xsl:element name="empty" namespace="{$rng-uri}"/ose>
   </xsl:template>
 
   <xsl:template matcrng:oneOrMore">
@@ -418,17 +410,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       <xsl:apply-templates select="*|text()"/ose>
     </xsl:copy>
   </xsl:template  <xsl:template match="rng:*">
-    <xsl:choose>
-      <xsl:when
-          test="@nma:config='false' and
-                ($target='get-config-reply' or $target='config'
-                or $target='edit-config')">
-        <xsl:element name="empty" namespace="{$rng-uri}"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:call-template name="copy-and-continue"/>
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:call-template name="copy-and-continue"/>
   </xsl:template>
 
 </xsl:stylesheet>
