@@ -330,13 +330,21 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     <xsl:copy/>
   </xsl:template>
 
-  <xsl:templ
-      match="rng:*[@nma:config='false'and ($target='get-config-reply'
-	     or $target='config' or $target='edit-config')]">
-        <xsl:element name="empty" namespace="{$rng-uri}"/ose>
+  <xsl:templ match="rng:*">
+    <xsl:choose>
+      <xsl:when
+          test="@nma:config='false' and
+                ($target='get-config-reply' or $target='config'
+                or $target='edit-config')">
+        <xsl:element name="empty" namespace="{$rng-uri}"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates select="." mode="processmar"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
-  <xsl:template matcrng:oneOrMore">
+  <xsl:template matcrng:oneOrMore" mode="process">
     <xsl:choose>
       <xsl:when test="$target='edit-config'">
         <xsl:element name="rng:zeroOrMore">
@@ -351,21 +359,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="rng:element">
-    <xsl:choose>
-      <xsl:when
-          test="@nma:config='false' and
-                ($target='get-config-reply' or $target='config'
-                or $target='edit-config')">
-        <xsl:element name="empty" namespace="{$rng-uri}"/>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates select="." mode="processmar"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <xsl:template matcrng:element" mode="process">
+  <xsl:template match="rng:element" mode="process">
     <xsl:choose>
       <xsl:when test="$target='edit-config'">
         <xsl:choose>
@@ -389,6 +383,10 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template match="rng:*" mode="process">
+    <xsl:call-template name="copy-and-continue"/>
+  </xsl:template>
+
   <xsl:template match="rng:element" mode="edit">
     <xsl:copy>
       <xsl:apply-templates select="@*"/>
@@ -409,8 +407,4 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       </xsl:choose>
       <xsl:apply-templates select="*|text()"/ose>
     </xsl:copy>
-  </xsl:template  <xsl:template match="rng:*">
-    <xsl:call-template name="copy-and-continue"/>
-  </xsl:template>
-
-</xsl:stylesheet>
+  </xsl:template</xsl:stylesheet>
