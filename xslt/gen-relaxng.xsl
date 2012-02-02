@@ -82,7 +82,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
   <xsl:template name="copy-and-continue">
     <xsl:copy>
       <xsl:apply-templates select="@*"/>
-      <xsl:apply-templates select="*|text()"/ose>
+      <xsl:apply-templates select="rng:*|text()"/ose>
     </xsl:copy>
   </xsl:template  <xsl:template match="/">
     <xsl:call-template name="check-input-pars"/>
@@ -300,31 +300,29 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     <xsl:choose>
       <xsl:when test="count(rng:*)>1">
         <xsl:element name="group" namespace="{$rng-uri}">
-          <xsl:apply-templates/>
+          <xsl:apply-templates select="rng:*"/>
         </xsl:element>
       </xsl:when>
       <xsl:otherwise>
-        >
-	<xsl:apply-templates/>
+        <xsl:apply-templates select="rng:*"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template matcnma:notification">
+  <xsl:template match="nma:notification">
     <xsl:choose>
       <xsl:when test="count(rng:*)>1">
         <xsl:element name="interleave" namespace="{$rng-uri}">
-          <xsl:apply-templates/>
+          <xsl:apply-templates select="rng:*"/>
         </xsl:element>
       </xsl:when>
       <xsl:otherwise>
-        >
-	<xsl:apply-templates/>
+        <xsl:apply-templates select="rng:*"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="@nma:*|nma:*|a:*"/>
+  <xsl:template match="h="@nma:*|nma:*|a:*"/>
 
   <xsl:template match="@*">
     <xsl:copy/>
@@ -358,12 +356,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       <xsl:when test="$target='edit-config'">
         <xsl:element name="rng:zeroOrMore">
           <xsl:apply-templates select="@*"/>
-          <xsl:apply-templates/>
+          <xsl:apply-templates select="rng:*"/>
         </xsl:element>
       </xsl:when>
       <xsl:otherwise>
-        >
-	<xcall-template name="copy-and-continue"/>
+        <xsl:call-template name="copy-and-continue"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
