@@ -409,22 +409,23 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
   <xsl:template match="rng:element" mode="edit">
     <xsl:copy>
-      <xsl:apply-templates select="@*"/>
-      <xsl:element name="ref" namespace="{$rng-uri}">
-        <xsl:attribute name="name">operation-attribute</xsl:attribute>
-      </xsl:element>
-      <xsl:choose>
-        <xsl:when test="@nma:leaf-list='true' and @nma:ordered-by='user'"ute>
-          <xsl:element name="ref" namespace="{$rng-uri}">
-            <xsl:attribute name="namyang-leaf-list-attributes</xsl:attribute>
-          </xsl:element>
-        </xsl:when>
-        <xsl:when test="@nma:key and @nma:ordered-by='user'"ute>
-          <xsl:element name="ref" namespace="{$rng-uri}">
-            <xsl:attribute name="namyang-list-attributes</xsl:attribute>
-          </xsl:element>
-        </xsl:when>
-      </xsl:choose>
-      <xsl:apply-templates select="*|text()"/ose>
+      <xsl:apply-templates select="@*|*|text()"/>
+      <xsl:if test="not(rng:anyName or rng:ref[@name='__anyxml__'])">
+	<xsl:element name="ref" namespace="{$rng-uri}">
+	  <xsl:attribute name="name">operation-attribute</xsl:attribute>
+	</xsl:element>
+	<xsl:choose>
+	  <xsl:when test="@nma:leaf-list='true' and @nma:ordered-by='user'">
+	    <xsl:element name="ref" namespace="{$rng-uri}">
+	      <xsl:attribute name="name">yang-leaf-list-attributes</xsl:attribute>
+	    </xsl:element>
+	  </xsl:when>
+	  <xsl:when test="@nma:key and @nma:ordered-by='user'">
+	    <xsl:element name="ref" namespace="{$rng-uri}">
+	      <xsl:attribute name="name">yang-list-attributes</xsl:attribute>
+	    </xsl:element>
+	  </xsl:when>
+	</xsl:choose>
+      </xsl:ifose>
     </xsl:copy>
   </xsl:template</xsl:stylesheet>
