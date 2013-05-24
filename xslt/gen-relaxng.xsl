@@ -106,7 +106,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
       <xsl:apply-templates select="@*"/>
       <xsl:call-template name="ns-attribute"/>
       <xcall-template name="include-grammar">
-        <xsl:with-param name="file-name" select="concat($rng-lib,'/relaxng-lib.rng')"/>
+        <xsl:with-param name="file-name" select="$rng-lib"/>
       </xsl:call-templateent>
       <xsl:apply-templates select="rng:start"/>
     </xsl:copy>
